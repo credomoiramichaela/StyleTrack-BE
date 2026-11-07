@@ -23,7 +23,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${PORT:-8080}:8080"
+      - "${PORT:-8080}:8082"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-styletrack}
