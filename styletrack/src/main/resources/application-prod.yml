@@ -1,0 +1,26 @@
+# Activated with SPRING_PROFILES_ACTIVE=prod
+# Fails fast at startup if the required secrets are not provided.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+
+styletrack:
+  jwt:
+    secret: ${JWT_SECRET}
+  seed:
+    admin-password: ${ADMIN_PASSWORD}
+
+logging:
+  level:
+    root: INFO
+    com.styletrack: INFO

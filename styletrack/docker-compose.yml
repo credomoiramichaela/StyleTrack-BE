@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: styletrack-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-styletrack}
+      POSTGRES_USER: ${DB_USERNAME:-styletrack}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - styletrack-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-styletrack} -d ${DB_NAME:-styletrack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: styletrack-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-styletrack}
+      DB_USERNAME: ${DB_USERNAME:-styletrack}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (min 32 chars) in .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:4200,http://localhost:5173}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Manila}
+      QRPH_IMAGE_URL: ${QRPH_IMAGE_URL:-}
+      QRPH_ACCOUNT_NAME: ${QRPH_ACCOUNT_NAME:-Jonathan Hair Studio}
+      LOYALTY_SILVER_VISITS: ${LOYALTY_SILVER_VISITS:-5}
+      LOYALTY_GOLD_VISITS: ${LOYALTY_GOLD_VISITS:-10}
+      PAYMONGO_SECRET_KEY: ${PAYMONGO_SECRET_KEY:-}
+      PAYMONGO_WEBHOOK_SECRET: ${PAYMONGO_WEBHOOK_SECRET:-}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:8080}
+
+volumes:
+  styletrack-data:
