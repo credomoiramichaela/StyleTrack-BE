@@ -26,7 +26,7 @@ spring:
         default-page-size: 20
 
 server:
-  port: ${PORT:8081}
+  port: ${PORT:8082}
   shutdown: graceful
   forward-headers-strategy: framework
   error:
